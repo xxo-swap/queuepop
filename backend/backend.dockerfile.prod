@@ -1,0 +1,29 @@
+# Stage 1: Build stage
+FROM node:20 AS builder
+
+WORKDIR /app
+
+# Install all dependencies (dev + prod)
+COPY package*.json ./
+RUN npm install
+
+# Copy code
+COPY . .
+
+# Stage 2: Production image
+FROM node:20 AS production
+
+WORKDIR /app
+
+# Install only production dependencies
+COPY package*.json ./
+RUN npm ci --production
+
+# Copy everything from builder
+COPY --from=builder /app .
+
+# Expose port
+EXPOSE 4000
+
+# Start server
+CMD ["node", "src/server.js"]

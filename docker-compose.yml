@@ -1,0 +1,57 @@
+services:  
+  db:
+    container_name : db
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/db/migrations:/db/migrations 
+
+    ports:
+      - "5432:5432"
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+  backend:
+    container_name: backend
+    image: backend
+    build:
+      context: ./backend
+      dockerfile: backend.dockerfile.dev
+    depends_on:
+      - db
+    env_file:
+      - ./backend/.env.docker
+    volumes:
+      - ./backend:/app
+      
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+      PORT: 4000
+
+    ports:
+      - "4000:4000"
+
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: frontend.dockerfile
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:4000/api
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata: {}

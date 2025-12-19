@@ -3,6 +3,7 @@
 import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
+const API_URL = process.env.NEXT_PUBLIC_API_URL; // <- use the Vercel env variable
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -10,7 +11,7 @@ export function AuthProvider({ children }) {
   // 🔹 REGISTER user
   const register = async ({ name, email, password }) => {
     try {
-      const res = await fetch("http://localhost:4000/api/v1/auth/register", {
+      const res = await fetch(`${API_URL}/api/v1/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
@@ -20,7 +21,7 @@ export function AuthProvider({ children }) {
       if (!res.ok) throw new Error("Registration failed");
 
       const data = await res.json();
-      setUser(data.user || { name, email }); // store user in state
+      setUser(data.user || { name, email });
       return data;
     } catch (err) {
       console.error("❌ Register error:", err.message);
@@ -31,7 +32,7 @@ export function AuthProvider({ children }) {
   // 🔹 LOGIN user
   const login = async ({ email, password }) => {
     try {
-      const res = await fetch("http://localhost:4000/api/login", {
+      const res = await fetch(`${API_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -52,7 +53,7 @@ export function AuthProvider({ children }) {
   // 🔹 LOGOUT user
   const logout = async () => {
     try {
-      await fetch("http://localhost:4000/api/logout", {
+      await fetch(`${API_URL}/api/logout`, {
         method: "POST",
         credentials: "include"
       });

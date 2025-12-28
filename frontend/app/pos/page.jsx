@@ -10,9 +10,6 @@ export default function POSPage() {
 
   useEffect(() => {
 
-    const data = fetch('/api/v1/menu/').then(res => res.json()).then(setItems).catch(console.error);
-    console.log(data);
-
     // Temporary static data
     setItems([
       { id: 1, name: "Pizza", price: 200, description: "Cheesy pizza" },

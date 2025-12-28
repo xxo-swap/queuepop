@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
-const API_URL = process.env.NEXT_PUBLIC_API_URL; // <- use the Vercel env variable
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -11,18 +11,17 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     checkSession();
-    console.log("caling auth/me")
   }, []);
 
   async function checkSession() {
     try {
-      const res = await fetch("http://localhost:4000/api/v1/auth/me", {
+      const res = await fetch(`${API_URL}/api/v1/auth/me`, {
         credentials: "include",
       });
-      if (!res.ok) throw new Error();
 
+      if (!res.ok) throw new Error();
       const data = await res.json();
-      setUser(data.data.user); // must include accountId
+      setUser(data.data.user);
     } catch {
       setUser(null);
     } finally {
@@ -31,7 +30,7 @@ export function AuthProvider({ children }) {
   }
 
   const login = async (payload) => {
-    const res = await fetch("http://localhost:4000/api/v1/auth/login", {
+    const res = await fetch(`${API_URL}/api/v1/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -40,14 +39,13 @@ export function AuthProvider({ children }) {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
-    console.log(data);
-    setUser(data.data.user);
 
+    setUser(data.data.user);
     return data;
   };
 
   const register = async (payload) => {
-    const res = await fetch("http://localhost:4000/api/v1/auth/register", {
+    const res = await fetch(`${API_URL}/api/v1/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -57,12 +55,12 @@ export function AuthProvider({ children }) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
 
-    setUser(data.user);
+    setUser(data.data.user);
     return data;
   };
 
   const logout = async () => {
-    await fetch("http://localhost:4000/api/v1/auth/logout", {
+    await fetch(`${API_URL}/api/v1/auth/logout`, {
       method: "POST",
       credentials: "include",
     });

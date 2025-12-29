@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import ItemCard from '../items/page';
-import Cart from '../../components/Cart';
 
 export default function POSPage() {
   const [items, setItems] = useState([]);
@@ -46,7 +45,6 @@ export default function POSPage() {
           </div>
         </section>
         <aside className="bg-white p-3 rounded shadow">
-          <Cart items={cart} onChangeQty={updateQty} onCheckout={checkout} />
         </aside>
       </div>
     </ProtectedRoute>
